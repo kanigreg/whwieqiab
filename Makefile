@@ -12,3 +12,18 @@ stop:
 	cat tmp/pids/server.pid | xargs kill
 
 restart: stop start
+
+# Make sure you have run ssh-agent before running deploy commands
+# ---
+#   ssh-add -l
+# ---
+# unless run agent and add key
+# ---
+#   eval $(ssh-agent)
+#   ssh-add ~/.ssh/id_of_deployment_private_key
+# ---
+deploy:
+	bws run --project-id ${BWS_PROJECT_QUERY_FLOW} -- kamal deploy
+
+deploy-setup:
+	bws run --project-id ${BWS_PROJECT_QUERY_FLOW} -- kamal setup

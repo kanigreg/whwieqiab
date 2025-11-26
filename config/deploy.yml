@@ -7,7 +7,7 @@ image: query_flow
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 91.188.214.55
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -20,26 +20,27 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  ssl: true
+  host: kanigerg.ru
 
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
+  server: ghcr.io/kanigreg
 
   # Needed for authenticated registries.
-  # username: your-user
+  username: kanigreg
 
   # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - DATABASE_URL
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -76,7 +77,6 @@ volumes:
 # version inside the asset_path.
 asset_path: /rails/public/assets
 
-
 # Configure the image builder.
 builder:
   arch: amd64
@@ -90,28 +90,29 @@ builder:
   # secrets:
   #   - GITHUB_TOKEN
   #   - RAILS_MASTER_KEY
-
 # Use a different ssh user than root
 # ssh:
 #   user: app
 
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
+#   postgres:
+#     image: postgres
+#     host: 91.188.214.55
 #     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
+#     port: "127.0.0.1:5432:5432"
 #     env:
 #       clear:
-#         MYSQL_ROOT_HOST: '%'
+#         POSTGRES_USER: query_flow_app
+#         POSTGRES_DB: query_flow_production
+#         DB_HOST: 127.0.0.1
+#         DB_PORT: 5432
 #       secret:
-#         - MYSQL_ROOT_PASSWORD
+#         - POSTGRES_PASSWORD
 #     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
 #       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
 #     directories:
-#       - data:/var/lib/mysql
+#       - data:/var/lib/postgresql/data
 #   redis:
 #     image: valkey/valkey:8
 #     host: 192.168.0.2
